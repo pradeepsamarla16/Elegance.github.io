@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Previous head content remains the same -->
+    <style>
+        /* Add these new styles to your existing CSS */
+        
+        /* Auth Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(58, 50, 38, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .auth-container {
+            background-color: white;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .close-auth {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--dark);
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .auth-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--dark);
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+        
+        .auth-tab.active {
+            opacity: 1;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .auth-form .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .auth-form .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .auth-form .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .auth-form-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .auth-form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* User Profile in Header */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 10px 0;
+            z-index: 100;
+        }
+        
+        .user-dropdown a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .user-dropdown a:hover {
+            background-color: var(--secondary);
+            color: var(--primary);
+        }
+        
+        .user-profile:hover .user-dropdown {
+            display: block;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-container {
+                padding: 30px 20px;
+                margin: 0 15px;
+            }
+            
+            .user-name {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Add this right after the opening body tag -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <span class="close-auth" id="closeAuth">&times;</span>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="register">Register</div>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="auth-form active" id="loginForm">
+                <form id="loginFormData">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-control" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+                <div class="auth-form-footer">
+                    Don't have an account? <a href="#" id="switchToRegister">Register here</a>
+                </div>
+            </div>
+            
+            <!-- Registration Form -->
+            <div class="auth-form" id="registerForm">
+                <form id="registerFormData">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regFirstName">First Name</label>
+                            <input type="text" id="regFirstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regLastName">Last Name</label>
+                            <input type="text" id="regLastName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" id="regEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPhone">Phone Number</label>
+                        <input type="tel" id="regPhone" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regPassword">Password</label>
+                            <input type="password" id="regPassword" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regConfirmPassword">Confirm Password</label>
+                            <input type="password" id="regConfirmPassword" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="regTerms" required>
+                        <label for="regTerms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    </div>
+                    <button type="submit" class="submit-btn">Create Account</button>
+                </form>
+                <div class="auth-form-footer">
+                    Already have an account? <a href="#" id="switchToLogin">Login here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update the header section to include login/profile -->
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo">Salon <span>Elegance</span></a>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#team">Team</a></li>
+                    <li><a href="#booking">Book Now</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li id="authLinkContainer">
+                        <a href="#" id="authLink">Login</a>
+                    </li>
+                    <li id="userProfileContainer" style="display: none;">
+                        <div class="user-profile">
+                            <div class="user-avatar" id="userAvatar">JD</div>
+                            <span class="user-name" id="userName">John Doe</span>
+                            <div class="user-dropdown">
+                                <a href="#">My Profile</a>
+                                <a href="#">My Appointments</a>
+                                <a href="#" id="logoutLink">Logout</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Rest of your existing landing page content remains the same -->
+
+    <script>
+        // Add this to your existing script section
+        
+        // Auth Modal Functionality
+        const authModal = document.getElementById('authModal');
+        const authLink = document.getElementById('authLink');
+        const closeAuth = document.getElementById('closeAuth');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const userProfileContainer = document.getElementById('userProfileContainer');
+        const authLinkContainer = document.getElementById('authLinkContainer');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const logoutLink = document.getElementById('logoutLink');
+        
+        // Check if user is logged in (in a real app, this would check with your backend)
+        function checkLoginStatus() {
+            const user = JSON.parse(localStorage.getItem('salonUser'));
+            if (user) {
+                authLinkContainer.style.display = 'none';
+                userProfileContainer.style.display = 'block';
+                userAvatar.textContent = user.firstName.charAt(0) + user.lastName.charAt(0);
+                userName.textContent = `${user.firstName} ${user.lastName}`;
+            } else {
+                authLinkContainer.style.display = 'block';
+                userProfileContainer.style.display = 'none';
+            }
+        }
+        
+        // Show auth modal
+        authLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            authModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // Close auth modal
+        closeAuth.addEventListener('click', () => {
+            authModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Switch between login and register tabs
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                authTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                authForms.forEach(form => {
+                    form.classList.remove('active');
+                    if (form.id === `${tabId}Form`) {
+                        form.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        // Switch to register form
+        switchToRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            authTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector('.auth-tab[data-tab="register"]').classList.add('active');
+            
+            authForms.forEach(form => {
+                form.classList.remove('active');
+                if (form.id === 'registerForm') {
+                    form.classList.add('active');
+                }
+            });
+        });
+        
+        // Switch to login form
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            authTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector('.auth-tab[data-tab="login"]').classList.add('active');
+            
+            authForms.forEach(form => {
+                form.classList.remove('active');
+                if (form.id === 'loginForm') {
+                    form.classList.add('active');
+                }
+            });
+        });
+        
+        // Handle registration form submission
+        document.getElementById('registerFormData').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('regFirstName').value;
+            const lastName = document.getElementById('regLastName').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            
+            // Simple validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            // In a real app, you would send this to your backend
+            const user = {
+                firstName,
+                lastName,
+                email,
+                phone,
+                // In a real app, you would hash the password before storing
+                password
+            };
+            
+            // Save to localStorage (simulating backend storage)
+            localStorage.setItem('salonUser', JSON.stringify(user));
+            
+            // Close modal and update UI
+            authModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            checkLoginStatus();
+            
+            alert('Registration successful! You are now logged in.');
+        });
+        
+        // Handle login form submission
+        document.getElementById('loginFormData').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // In a real app, you would verify with your backend
+            // For demo, we'll check against any registered user
+            const storedUser = JSON.parse(localStorage.getItem('salonUser'));
+            
+            if (storedUser && storedUser.email === email && storedUser.password === password) {
+                // Close modal and update UI
+                authModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                checkLoginStatus();
+                
+                alert('Login successful!');
+            } else {
+                alert('Invalid email or password');
+            }
+        });
+        
+        // Handle logout
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('salonUser');
+            checkLoginStatus();
+            alert('You have been logged out.');
+        });
+        
+        // Check login status on page load
+        checkLoginStatus();
+        
+        // Close modal when clicking outside
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Pre-fill booking form if user is logged in
+        document.getElementById('appointment-form')?.addEventListener('focusin', () => {
+            const user = JSON.parse(localStorage.getItem('salonUser'));
+            if (user) {
+                document.getElementById('name').value = `${user.firstName} ${user.lastName}`;
+                document.getElementById('email').value = user.email;
+                document.getElementById('phone').value = user.phone;
+            }
+        });
+        
+        // Rest of your existing script remains the same
+    </script>
+</body>
+</html>
